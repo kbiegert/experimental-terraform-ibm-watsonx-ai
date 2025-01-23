@@ -8,12 +8,12 @@ provider "ibm" {
   visibility       = var.provider_visibility
 }
 
-provider "restapi" {
-  uri                  = "https:"
-  write_returns_object = true
-  debug                = true
-  headers = {
-    Authorization = data.ibm_iam_auth_token.restapi.iam_access_token
-    Content-Type  = "application/json"
-  }
-}
+# provider "restapi" {
+#   uri                  = "https:"
+#   write_returns_object = true
+#   debug                = true
+#   headers = {
+#     Authorization = data.ibm_iam_auth_token.restapi.iam_access_token
+#     Content-Type  = "application/json"
+#   }
+# }
