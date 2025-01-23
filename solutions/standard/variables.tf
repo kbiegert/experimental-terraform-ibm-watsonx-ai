@@ -168,10 +168,10 @@ variable "enable_cos_kms_encryption" {
   type        = bool
   default     = true
 
-  validation {
-    condition     = (var.enable_cos_kms_encryption == true && var.existing_cos_kms_key_crn == null) ? (var.existing_kms_instance_crn == null ? false : true) : true
-    error_message = "A value must be passed for either 'existing_kms_instance_crn' or 'existing_cos_kms_key_crn' when 'enable_cos_kms_encryption' is set to true."
-  }
+  # validation {
+  #   condition     = (var.enable_cos_kms_encryption == true && var.existing_cos_kms_key_crn == null) ? (var.existing_kms_instance_crn == null ? false : true) : true
+  #   error_message = "A value must be passed for either 'existing_kms_instance_crn' or 'existing_cos_kms_key_crn' when 'enable_cos_kms_encryption' is set to true."
+  # }
 }
 
 ##############################################################################################################
