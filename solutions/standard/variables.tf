@@ -126,13 +126,13 @@ variable "existing_kms_instance_crn" {
   default     = null
   description = "The CRN of the existing key management service (KMS) that is used to create keys for encrypting the Cloud Object Storage bucket. If you are not using an existing KMS root key, you must specify this CRN. If you are using an existing KMS root key, an existing COS instance and auth policy is not set for COS to KMS, you must specify this CRN."
 
-  validation {
-    condition = anytrue([
-      can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_kms_instance_crn)),
-      var.existing_kms_instance_crn == null,
-    ])
-    error_message = "The provided KMS (Key Protect) instance CRN in not valid."
-  }
+  # validation {
+  #   condition = anytrue([
+  #     can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_kms_instance_crn)),
+  #     var.existing_kms_instance_crn == null,
+  #   ])
+  #   error_message = "The provided KMS (Key Protect) instance CRN in not valid."
+  # }
 }
 
 variable "existing_cos_kms_key_crn" {
