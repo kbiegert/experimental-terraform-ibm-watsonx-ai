@@ -344,7 +344,7 @@
             {
               "name": "deploy-arch-ibm-cos",
               "id": "f999dd23-c1ae-4806-95a8-c80cc0326b97",
-              "version": "^v8.19.2",
+              "version": "^8.19.2",
               "flavors": [
                 "instance"
               ],
