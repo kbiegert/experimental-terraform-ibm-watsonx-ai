@@ -19,32 +19,21 @@ variable "provider_visibility" {
   }
 }
 
-variable "use_existing_resource_group" {
-  type        = bool
-  description = "Whether to use an existing resource group."
-  default     = false
-}
-
-variable "resource_group_name" {
+variable "existing_resource_group_name" {
   type        = string
-  description = "The name of a new or an existing resource group to provision the watsonx.ai resources. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
+  description = "The name of an existing resource group to provision the watsonx.ai in."
 }
 
 variable "prefix" {
   type        = string
-  description = "Prefix to add to all the resources created by this solution."
-  default     = "watsonx-ai"
+  nullable    = true
+  description = "The prefix to add to all resources that this solution creates (e.g `prod`, `test`, `dev`). To not use any prefix value, you can set this value to `null` or an empty string."
 }
 
 variable "region" {
   default     = "us-south"
   description = "Region where the watsonx.ai resources will be provisioned."
   type        = string
-
-  validation {
-    condition     = contains(["eu-de", "us-south", "eu-gb", "jp-tok"], var.region)
-    error_message = "You must specify `eu-de`, `eu-gb`, `jp-tok` or `us-south` as the IBM Cloud region."
-  }
 }
 
 variable "resource_tags" {
@@ -65,18 +54,18 @@ variable "existing_watsonx_ai_studio_instance_crn" {
 
 variable "watsonx_ai_studio_plan" {
   default     = "professional-v1"
-  description = "The plan that is used to provision the watsonx.ai Studio instance. Allowed values are 'free-v1' and 'professional-v1'."
+  description = "The plan that is used to provision the watsonx.ai Studio instance. Allowed values are 'free-v1' and 'professional-v1'. 'free-v1' corresponds to 'Lite' and 'professional-v1' refers to 'Professional' plan on IBM Cloud dashboard."
   type        = string
   validation {
     condition     = contains(["free-v1", "professional-v1"], var.watsonx_ai_studio_plan)
-    error_message = "You must use a free-v1 or professional-v1 plan for watsonx.ai Studio."
+    error_message = "You must use a free-v1 or professional-v1 plan for watsonx.ai Studio. [Learn more](https://cloud.ibm.com/catalog/services/watsonxai-studio)."
   }
 }
 
 variable "watsonx_ai_studio_instance_name" {
   type        = string
   description = "The name of the watsonx.ai Studio instance to create. If a prefix input variable is passed, it is prefixed to the value in the `<prefix>-value` format."
-  default     = "studio"
+  default     = "watson-ai"
 }
 
 ###############################################################################################################
@@ -96,20 +85,20 @@ variable "watsonx_ai_runtime_instance_name" {
 }
 
 variable "watsonx_ai_runtime_plan" {
-  description = "The plan that is used to provision the watsonx.ai Runtime instance. Allowed values are 'lite', 'v2-professional' and 'v2-standard'. For 'lite' plan, the `watsonx_ai_runtime_service_endpoints` value is ignored and the default service configuration is applied."
+  description = "The plan that is used to provision the watsonx.ai Runtime instance. Allowed values are 'lite', 'v2-professional' and 'v2-standard'. 'lite' refers to 'Lite', 'v2-professional' corresponds to 'Standard' and 'v2-standard' refers to 'Essentials' plan on IBM Cloud dashboard. For 'lite' plan, the `watsonx_ai_runtime_service_endpoints` value is ignored and the default service configuration is applied."
   type        = string
-  default     = "v2-professional"
+  default     = "v2-standard"
 
   validation {
     condition     = contains(["lite", "v2-professional", "v2-standard"], var.watsonx_ai_runtime_plan)
-    error_message = "The plan must be lite, v2-professional, or v2-standard for watsonx.ai Runtime."
+    error_message = "The plan must be lite, v2-professional, or v2-standard for watsonx.ai Runtime. [Learn more](https://cloud.ibm.com/catalog/services/watsonxai-runtime)."
   }
 }
 
 variable "watsonx_ai_runtime_service_endpoints" {
   type        = string
   description = "The type of service endpoints for watsonx.ai Runtime. Possible values: 'public', 'private', 'public-and-private'."
-  default     = "public"
+  default     = "private"
 
   validation {
     condition     = contains(["public", "public-and-private", "private"], var.watsonx_ai_runtime_service_endpoints)
@@ -126,13 +115,13 @@ variable "existing_kms_instance_crn" {
   default     = null
   description = "The CRN of the existing key management service (KMS) that is used to create keys for encrypting the Cloud Object Storage bucket. If you are not using an existing KMS root key, you must specify this CRN. If you are using an existing KMS root key, an existing COS instance and auth policy is not set for COS to KMS, you must specify this CRN."
 
-  # validation {
-  #   condition = anytrue([
-  #     can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_kms_instance_crn)),
-  #     var.existing_kms_instance_crn == null,
-  #   ])
-  #   error_message = "The provided KMS (Key Protect) instance CRN in not valid."
-  # }
+  validation {
+    condition = anytrue([
+      can(regex("^crn:(.*:){3}kms:(.*:){2}[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}::$", var.existing_kms_instance_crn)),
+      var.existing_kms_instance_crn == null,
+    ])
+    error_message = "The provided KMS (Key Protect) instance CRN in not valid."
+  }
 }
 
 variable "existing_cos_kms_key_crn" {
@@ -144,7 +133,7 @@ variable "existing_cos_kms_key_crn" {
 variable "kms_endpoint_type" {
   type        = string
   description = "The type of endpoint to use for communicating with the Key Protect instance. Possible values: `public`, `private`. Applies only if `existing_cos_kms_key_crn` is not specified."
-  default     = "public"
+  default     = "private"
   validation {
     condition     = can(regex("public|private", var.kms_endpoint_type))
     error_message = "Valid values for the `kms_endpoint_type_value` are `public` or `private`."
@@ -166,12 +155,12 @@ variable "kms_key_name" {
 variable "enable_cos_kms_encryption" {
   description = "Flag to enable COS KMS encryption. If set to true, a value must be passed for `existing_cos_kms_key_crn`."
   type        = bool
-  default     = true
+  default     = false
 
-  # validation {
-  #   condition     = (var.enable_cos_kms_encryption == true && var.existing_cos_kms_key_crn == null) ? (var.existing_kms_instance_crn == null ? false : true) : true
-  #   error_message = "A value must be passed for either 'existing_kms_instance_crn' or 'existing_cos_kms_key_crn' when 'enable_cos_kms_encryption' is set to true."
-  # }
+  validation {
+    condition     = (var.enable_cos_kms_encryption == true && var.existing_cos_kms_key_crn == null) ? (var.existing_kms_instance_crn == null ? false : true) : true
+    error_message = "A value must be passed for either 'existing_kms_instance_crn' or 'existing_cos_kms_key_crn' when 'enable_cos_kms_encryption' is set to true."
+  }
 }
 
 ##############################################################################################################
