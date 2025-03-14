@@ -71,14 +71,14 @@
                   "crn:v1:bluemix:public:iam::::role:Editor"
                 ],
                 "service_name": "data-science-experience",
-                "notes": "Be sure to read the remaining notes."
+                "notes": "This role is necessary because this deployment creates these resources."
               },
               {
                 "role_crns": [
                   "crn:v1:bluemix:public:iam::::role:Editor"
                 ],
                 "service_name": "pm-20",
-                "notes": "what notes?"
+                "notes": "You may not need this level of permission if you are not deploying a full Watson environment."
               },
               {
                 "role_crns": [
